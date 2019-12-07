@@ -17,6 +17,8 @@ import Select from "react-select";
 import Paginator from "./Paginator";
 import { getRows } from "./utils";
 import ContentEditable from "react-contenteditable";
+import { Button } from "reactstrap";
+import "./buttonCss.css";
 
 const count = 1000;
 const rows = getRows(count);
@@ -92,9 +94,6 @@ class MyTable extends Component {
       console.log(`Option selected:`, this.state.selectedOption)
     );
     TOTAL_WIDTH2 = selectedOption.value;
-    //this.setState(TOTAL_WIDTH);
-    //console.log(TOTAL_WIDTH);
-    //this.forceUpdate();
   };
 
   handleChangePaginator = selectedOptionPaginator => {
@@ -102,9 +101,6 @@ class MyTable extends Component {
       console.log(`Option selected:`, this.state.selectedOptionPaginator)
     );
     this.setState({ perPage: +selectedOptionPaginator.value });
-    //this.setState(TOTAL_WIDTH);
-    //console.log(TOTAL_WIDTH);
-    //this.forceUpdate();
   };
   getData = event => {
     client
@@ -178,13 +174,40 @@ class MyTable extends Component {
       />
     );
   }
+  handleDeleteRow(evt, rowIndex, dataKey) {
+    this.state.list.splice(rowIndex, 1);
+    this.setState(this.state.list);
+  }
+  _deleteCellRenderer({
+    cellData,
+    columnData,
+    columnIndex,
+    dataKey,
+    isScrolling,
+    rowData,
+    rowIndex
+  }) {
+    return (
+      <div className="cellClass">
+        <Button
+          className={"Button-" + { rowIndex }}
+          color="danger"
+          onClick={e => {
+            this.handleDeleteRow.bind(this)(e, rowIndex, dataKey);
+          }}
+        >
+          X
+        </Button>
+      </div>
+    );
+  }
+
+  handleOnRowMouseOver(row) {
+    console.log(row);
+  }
 
   render() {
-    //console.log(this.state.list);
     const { page, perPage, scrollToIndex } = this.state;
-    //const headerHeight = 20;
-    //const rowHeight = 30;
-    //const height = rowHeight * perPage + headerHeight;
     const rowCount = this.state.list.length;
     const pageCount = Math.ceil(rowCount / perPage);
 
@@ -231,6 +254,7 @@ class MyTable extends Component {
                   rowCount={this.state.list.length}
                   rowGetter={({ index }) => this.state.list[index]}
                   rowStyle={this.rowStyleFormat.bind(this)}
+                  onRowMouseOver={this.handleOnRowMouseOver.bind(this)}
                   sort={this.sort}
                   sortBy={this.state.sortBy}
                   sortDirection={this.state.sortDirection}
@@ -264,6 +288,7 @@ class MyTable extends Component {
                     label={this.state.tabletitle4}
                     width={this.state.widths.multiply * TOTAL_WIDTH2}
                   />
+                  <Column cellRenderer={this._deleteCellRenderer.bind(this)} />
                 </Table>
               )}
             </AutoSizer>
@@ -307,13 +332,15 @@ class MyTable extends Component {
     this.setState(prevState => {
       const prevWidths = prevState.widths;
       const percentDelta = deltaX / TOTAL_WIDTH;
-      const nextDataKey = "";
+      var nextDataKey = "";
       if (dataKey === "num1") {
         nextDataKey = "num2";
       } else if (dataKey === "num2") {
         nextDataKey = "addition";
       } else if (dataKey === "addition") {
         nextDataKey = "multiply";
+      } else {
+        nextDataKey = "";
       }
 
       return {

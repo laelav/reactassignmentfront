@@ -1,0 +1,6 @@
+.cellClasss {
+  display: none;
+}
+myrow:hover + cellClass {
+  display: block;
+}
