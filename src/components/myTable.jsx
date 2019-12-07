@@ -16,6 +16,7 @@ import _ from "underscore";
 import Select from "react-select";
 import Paginator from "./Paginator";
 import { getRows } from "./utils";
+import ContentEditable from "react-contenteditable";
 
 const count = 1000;
 const rows = getRows(count);
@@ -152,6 +153,32 @@ class MyTable extends Component {
     );
   };
 
+  handleCellChange(evt, rowIndex, dataKey) {
+    const { target } = evt;
+    //console.log(this.state.list[rowIndex][dataKey]);
+    this.state.list[rowIndex][dataKey] = target.value;
+    this.setState(this.state.list[rowIndex][dataKey]);
+  }
+  _cellRenderer({
+    cellData,
+    columnData,
+    columnIndex,
+    dataKey,
+    isScrolling,
+    rowData,
+    rowIndex
+  }) {
+    return (
+      <ContentEditable
+        html={cellData}
+        disabled={false}
+        onChange={e => {
+          this.handleCellChange.bind(this)(e, rowIndex, dataKey);
+        }}
+      />
+    );
+  }
+
   render() {
     //console.log(this.state.list);
     const { page, perPage, scrollToIndex } = this.state;
@@ -213,12 +240,14 @@ class MyTable extends Component {
                 >
                   <Column
                     headerRenderer={this.headerRenderer}
+                    cellRenderer={this._cellRenderer.bind(this)}
                     dataKey="num1"
                     label={this.state.tabletitle1}
                     width={this.state.widths.num1 * TOTAL_WIDTH2}
                   />
                   <Column
                     headerRenderer={this.headerRenderer}
+                    cellRenderer={this._cellRenderer.bind(this)}
                     dataKey="num2"
                     label={this.state.tabletitle2}
                     width={this.state.widths.num2 * TOTAL_WIDTH2}
