@@ -29,6 +29,12 @@ const WIDTH_OPTIONS = [
   { value: "1000", label: "Wide" }
 ];
 
+const PAGINATOR_OPTIONS = [
+  { value: "5", label: "5" },
+  { value: "10", label: "10" },
+  { value: "20", label: "20" }
+];
+
 var TOTAL_WIDTH = 1000;
 var TOTAL_WIDTH2 = 1000;
 class MyTable extends Component {
@@ -49,6 +55,7 @@ class MyTable extends Component {
       sortBy: "num1",
       sortDirection: SortDirection.DESC,
       selectedOption: WIDTH_OPTIONS[2],
+      selectedOptionPaginator: PAGINATOR_OPTIONS[0],
       page: 1,
       perPage: 5,
       scrollToIndex: undefined,
@@ -84,6 +91,16 @@ class MyTable extends Component {
       console.log(`Option selected:`, this.state.selectedOption)
     );
     TOTAL_WIDTH2 = selectedOption.value;
+    //this.setState(TOTAL_WIDTH);
+    //console.log(TOTAL_WIDTH);
+    //this.forceUpdate();
+  };
+
+  handleChangePaginator = selectedOptionPaginator => {
+    this.setState({ selectedOptionPaginator }, () =>
+      console.log(`Option selected:`, this.state.selectedOptionPaginator)
+    );
+    this.setState({ perPage: +selectedOptionPaginator.value });
     //this.setState(TOTAL_WIDTH);
     //console.log(TOTAL_WIDTH);
     //this.forceUpdate();
@@ -151,6 +168,13 @@ class MyTable extends Component {
             value={this.state.selectedOption}
             onChange={this.handleChange}
             options={WIDTH_OPTIONS}
+          />
+        </p>
+        <p>
+          <Select
+            value={this.state.selectedOptionPaginator}
+            onChange={this.handleChangePaginator}
+            options={PAGINATOR_OPTIONS}
           />
         </p>
         <p>
